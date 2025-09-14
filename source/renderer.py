@@ -13,11 +13,10 @@ class Molde(pygame.sprite.Sprite):
 
 
 class Nota(pygame.sprite.Sprite):
-    def __init__(self, direcao, x, tecla, speed=5):
+    def __init__(self, x, tecla, speed=5):
         y = -50
         super().__init__()
 
-        self.direcao = direcao
         self.tecla = tecla
 
         img = pygame.image.load('assets/teclas/seta.png')

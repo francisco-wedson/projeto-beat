@@ -2,8 +2,7 @@ import pygame
 from pygame.locals import *
 from .renderer import Molde
 from .renderer import Nota
-
-pygame.init()
+from .music_parser import parse_music
 
 class Game():
     def __init__(self, screen, lagura, altura):
@@ -13,6 +12,15 @@ class Game():
         self.moldes = [Molde(390, 70), Molde(490, 70), Molde(590, 70), Molde(690, 70)]
         self.notas = pygame.sprite.Group()
 
+        #batidas
+        self.chart = parse_music('Its Going Down Now.mp3')
+        self.current_idx = 0
+        self.start_time = None
+
+        #Lanes para teclas
+        self.lane_keys = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
+        self.lane_x = [390, 490, 590, 690]
+
     def draw_text(self, texto, fonte, cor, x, y):
         msg = fonte.render(texto, True, cor)
         self.screen.blit(msg, (x, y))
@@ -21,6 +29,17 @@ class Game():
         self.notas.add(Nota(x, 0, tecla))
 
     def update(self):
+        if self.start_time is None:
+            self.start_time = pygame.time.get_ticks()
+
+        current_time = (pygame.time.get_ticks() - self.start_time) / 1000.0
+
+        if self.current_idx < len(self.chart):
+            onset_time, lane = self.chart[self.current_idx]
+            if current_time >= onset_time:
+                self.spawn_nota(self.lane_x[lane], self.lane_keys[lane])
+                self.current_idx += 1
+
         self.notas.update()
 
         keys = pygame.key.get_pressed()
@@ -38,3 +57,21 @@ class Game():
         for molde in self.moldes:
             molde.draw(self.screen)
         self.notas.draw(self.screen)
+
+    def run(self):
+        clock = pygame.time.Clock()
+        pygame.mixer.music.load('assets/musicas/Its Going Down Now.mp3')
+        pygame.mixer.music.play()
+
+        while True:
+            dt = clock.tick(60)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return "quit"
+
+            self.update()
+            self.screen.fill((0,0,0))
+            self.draw()
+            pygame.display.update()
+
+        return 'menu'
