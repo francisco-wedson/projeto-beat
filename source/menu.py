@@ -52,7 +52,7 @@ class Menu():
                     return 'quit'
 
             self.bg.update(dt)
-            self.update_blinking(dt)
+            #self.update_blinking(dt)
 
             self.bg.draw(self.screen)
             for button in self.buttons:
