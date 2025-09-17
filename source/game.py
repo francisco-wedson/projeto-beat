@@ -2,7 +2,8 @@ import pygame
 from pygame.locals import *
 from .renderer import Molde
 from .renderer import Nota
-from .music_parser import parse_music
+import os
+import json
 
 class Game():
     def __init__(self, screen, lagura, altura):
@@ -11,9 +12,11 @@ class Game():
         #Tecla
         self.moldes = [Molde(390, 70), Molde(490, 70), Molde(590, 70), Molde(690, 70)]
         self.notas = pygame.sprite.Group()
-
+        chart_path = os.path.join('assets', 'musicas', 'Its-Going-Down-Now.json') # Use o nome do .json que você gerou
+        with open(chart_path, 'r') as f:
+            self.chart = json.load(f)
+ 
         #batidas
-        self.chart = parse_music('Its Going Down Now.mp3')
         self.current_idx = 0
         self.start_time = None
 
@@ -26,7 +29,7 @@ class Game():
         self.screen.blit(msg, (x, y))
 
     def spawn_nota(self, x, tecla):
-        self.notas.add(Nota(x, 0, tecla))
+        self.notas.add(Nota(x, 1080, tecla))
 
     def update(self):
         if self.start_time is None:
@@ -60,7 +63,7 @@ class Game():
 
     def run(self):
         clock = pygame.time.Clock()
-        pygame.mixer.music.load('assets/musicas/Its Going Down Now.mp3')
+        pygame.mixer.music.load('assets/musicas/Its-Going-Down-Now-fixed.wav')
         pygame.mixer.music.play()
 
         while True:

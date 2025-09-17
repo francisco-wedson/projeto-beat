@@ -14,7 +14,7 @@ class Molde(pygame.sprite.Sprite):
 
 class Nota(pygame.sprite.Sprite):
     def __init__(self, x, tecla, speed=5):
-        y = -50
+        y = 1080
         super().__init__()
 
         self.tecla = tecla

@@ -5,6 +5,7 @@ from source.game import Game
 from source.menu import Menu
 
 pygame.init()
+pygame.mixer.init()
 
 #Nome da janela
 pygame.display.set_caption("Beat Strike")
