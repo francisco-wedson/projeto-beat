@@ -3,21 +3,22 @@ from .animated_bg import Animatedbackground
 from .button import Button
 
 class Menu():
-    def __init__(self, screen):
+    def __init__(self, screen, background):
         self.screen = screen
-        self.bg = Animatedbackground("assets/menu/background_menu")
+        self.bg = background
 
-        self.blink_timer = 0
-        self.blink_interval = 500
+        self.buttons_name = ['jogar', 'loja', 'opcoes', 'sair']
+        self.selected_index = 0
+
+        self.mouse_pos = (0, 0)
 
         self.load_menu_buttons()
 
     def load_menu_buttons(self):
         self.buttons = {}
-        botoes = ["jogar", "loja", "sair"]
-        y = 360
+        y = 460
 
-        for botao in botoes:
+        for botao in self.buttons_name:
             caminho_apagada = f"assets/menu/buttons/{botao}_button_no_light.png"
             img_apagada = pygame.image.load(caminho_apagada).convert_alpha()
             img_apagada = pygame.transform.scale(img_apagada, (318, 84))
@@ -29,33 +30,50 @@ class Menu():
             self.buttons[botao] = Button(801, y, img_apagada, img_acesa)
             y += 114
 
-    def update_blinking(self, dt):
-        self.blink_timer += dt
-        if self.blink_timer >= self.blink_interval:
-            self.blink_timer = 0
-            for button in self.buttons:
-                self.buttons[button].toggle_image()
+    def run(self, events, dt):
+        mouse_pos = pygame.mouse.get_pos()
 
-    def run(self, fps):
-        clock = pygame.time.Clock()
-        while True:
-            dt = clock.tick(fps)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return 'quit'
+        for event in events:
+            if event.type == pygame.QUIT:
+                return 'quit'
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_F11:
-                        pygame.display.toggle_fullscreen()
+            if event.type == pygame.MOUSEMOTION:
+                self.mouse_pos = event.pos
 
-                if self.buttons['sair'].check_click(event):
-                    return 'quit'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    self.selected_index = (self.selected_index + 1) % len(self.buttons_name)
 
-            self.bg.update(dt)
-            #self.update_blinking(dt)
+                if event.key == pygame.K_UP:
+                    self.selected_index = (self.selected_index - 1) % len(self.buttons_name)
 
-            self.bg.draw(self.screen)
-            for button in self.buttons:
-                self.buttons[button].draw(self.screen)
+                if event.key == pygame.K_RETURN:
+                    selected_button = self.buttons_name[self.selected_index]
+                    if selected_button == 'jogar': return 'player_select'
+                    elif selected_button == 'sair': return 'quit'
 
-            pygame.display.update()
+            if self.buttons['jogar'].check_click(event): return 'player_select'
+            elif self.buttons['sair'].check_click(event): return 'quit'
+
+        self.bg.update(dt)
+
+        for i, name in enumerate(self.buttons_name):
+            if self.buttons[name].rect.collidepoint(self.mouse_pos):
+                self.selected_index = i
+                break
+
+        for i, name in enumerate(self.buttons_name):
+            button = self.buttons[name]
+            if i == self.selected_index:
+                button.image = button.img_acesa
+            else:
+                button.image = button.img_apagada
+
+        self.bg.draw(self.screen)
+
+        for button in self.buttons:
+            self.buttons[button].draw(self.screen)
+
+        pygame.display.update()
+
+        return 'menu'

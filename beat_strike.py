@@ -3,9 +3,11 @@ from pygame.locals import *
 from sys import exit
 from source.game import Game
 from source.menu import Menu
+from source.animated_bg import Animatedbackground
+from source.player_select import Player_select
 
 pygame.init()
-pygame.mixer.init()
+pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=8192)
 
 #Nome da janela
 pygame.display.set_caption("Beat Strike")
@@ -23,20 +25,32 @@ bg = pygame.transform.scale(bg, resolucao_monitor)
 screen.blit(bg, (0,0))
 pygame.display.update()
 
+#Música
+pygame.mixer.music.load('assets/musicas/LupusNocte-Arcadewave.ogg')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.2)
+
+animated_bg = Animatedbackground("assets/menu/background_menu")
+
 #FPS
 fps = 60
 
-#Game
-game = Game(screen, largura, altura)
-
 #Menu
-menu = Menu(screen)
+menu = Menu(screen, animated_bg)
+
+#Player_select
+player_select = Player_select(screen, animated_bg)
 
 #Estado atual
 state = 'menu'
+clock = pygame.time.Clock()
+fps = 60
+
+game_context = {}
 
 while True:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == QUIT:
             pygame.quit()
             exit()
@@ -46,14 +60,22 @@ while True:
                 pygame.display.toggle_fullscreen()
 
     if state == 'menu':
-        state = menu.run(fps)
+        dt = clock.tick(fps)
+        state = menu.run(events, dt)
+
+    elif state == 'player_select':
+        dt = clock.tick(fps)
+        state = player_select.run(events, dt)
 
     elif state == 'game':
+        pygame.mixer.music.stop()
+
+        game = Game(screen, game_context)
         state = game.run()
+
+        if state == 'menu':
+            pygame.mixer.music.play(-1)
 
     elif state == 'quit':
         pygame.quit()
         exit()
-
-    #game.update()
-    #game.draw()
