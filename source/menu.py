@@ -1,5 +1,4 @@
 import pygame
-from .animated_bg import Animatedbackground
 from .button import Button
 
 class Menu():
@@ -58,7 +57,7 @@ class Menu():
         self.bg.update(dt)
 
         for i, name in enumerate(self.buttons_name):
-            if self.buttons[name].rect.collidepoint(self.mouse_pos):
+            if self.buttons[name].check_hover(mouse_pos):
                 self.selected_index = i
                 break
 
@@ -69,7 +68,7 @@ class Menu():
             else:
                 button.image = button.img_apagada
 
-        self.bg.draw(self.screen)
+        self.bg.draw(self.screen, (0, 0))
 
         for button in self.buttons:
             self.buttons[button].draw(self.screen)

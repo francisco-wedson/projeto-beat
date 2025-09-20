@@ -22,3 +22,17 @@ class Button():
                 if self.rect.collidepoint(event.pos):
                     return True
         return False
+
+    def check_hover(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            return True
+        return False
+
+class BackButton(Button):
+    def __init__(self, x, y):
+        img_off = pygame.image.load("assets/menu/buttons/voltar_off.png").convert_alpha()
+        img_on = pygame.image.load("assets/menu/buttons/voltar_on.png").convert_alpha()
+
+        img_off = pygame.transform.scale(img_off, (60, 48))
+        img_on = pygame.transform.scale(img_on, (60, 48))
+        super().__init__(x, y, img_off, img_on)
