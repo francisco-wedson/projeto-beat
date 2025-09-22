@@ -1,0 +1,12 @@
+{
+  "All The Things She Said": {
+    "artist": "t.A.T.u",
+    "time": "03:33",
+    "year": "2002"
+  },
+  "Rebel Yell": {
+    "artist": "Billy Idol",
+    "time": "02:05",
+    "year": "1983"
+  }
+}

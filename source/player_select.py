@@ -77,6 +77,7 @@ class PlayerSelect():
                 return 'quit'
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE: return 'menu'
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN:
                     self.selected_index = (self.selected_index + 1) % len(self.options)
 

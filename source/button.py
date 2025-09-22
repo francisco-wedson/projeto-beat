@@ -1,11 +1,14 @@
 import pygame
 
 class Button():
-    def __init__(self, x, y, img_apagada, img_acesa=None):
+    def __init__(self, x, y, img_apagada, img_acesa=None, center=None):
         self.img_apagada = img_apagada
         self.img_acesa = img_acesa
         self.image = self.img_apagada
-        self.rect = self.image.get_rect(topleft=(x, y))
+        if center:
+            self.rect = self.image.get_rect(center=(x, y))
+        else:
+            self.rect = self.image.get_rect(topleft=(x, y))
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect))
@@ -29,10 +32,10 @@ class Button():
         return False
 
 class BackButton(Button):
-    def __init__(self, x, y):
+    def __init__(self, x, y, center=None):
         img_off = pygame.image.load("assets/menu/buttons/voltar_off.png").convert_alpha()
         img_on = pygame.image.load("assets/menu/buttons/voltar_on.png").convert_alpha()
 
         img_off = pygame.transform.scale(img_off, (60, 48))
         img_on = pygame.transform.scale(img_on, (60, 48))
-        super().__init__(x, y, img_off, img_on)
+        super().__init__(x, y, img_off, img_on, center)

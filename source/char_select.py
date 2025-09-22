@@ -22,27 +22,26 @@ class CharSelect:
         self.selected_index_char = 0
         self.mouse_pos = (0, 0)
 
-        self.show_block_msg_timer = 0
-        self.show_chosen_msg_timer = 0
-
         #Carregar assets
         self.font_title = pygame.font.Font('assets/fontes/PressStart2P-Regular.ttf', 48)
         self.font_title_small = pygame.font.Font('assets/fontes/PressStart2P-Regular.ttf', 28)
 
         self.arrow_select_p1 = pygame.image.load('assets/menu/char_select/selection_arrow_p1.png')
-        self.arrow_unable_select = pygame.image.load('assets/menu/char_select/selection_arrow_p2.png')
+        self.arrow_select_p2 = pygame.image.load('assets/menu/char_select/selection_arrow_p2.png')
+        self.arrow_unable_select = pygame.image.load('assets/menu/char_select/selection_arrow_not.png')
         self.arrow_side = pygame.image.load('assets/menu/char_select/side_arrow.png')
 
         self.arrow_select_p1 = pygame.transform.scale(self.arrow_select_p1, (75, 51))
+        self.arrow_select_p2 = pygame.transform.scale(self.arrow_select_p2, (75, 51))
         self.arrow_unable_select = pygame.transform.scale(self.arrow_unable_select, (75, 51))
         self.arrow_side = pygame.transform.scale(self.arrow_side, (60, 34))
 
         #Dicionário assets
         self.char_assets = {
-                        'pulse': Animation('assets/characters_animation/Pulse/Idle Blink', (520, 420), 50),
-                        'echo': Animation('assets/characters_animation/Echo/Locked', (520, 420)),
-                        'beat': Animation('assets/characters_animation/Beat/Idle Blink', (520, 420), 50)
-                    }
+                        'pulse': Animation('assets/characters_animation/Pulse/Idle Blink', (520, 420), 50, True),
+                        'echo': Animation('assets/characters_animation/Echo/Locked', (520, 420), 50, True),
+                        'beat': Animation('assets/characters_animation/Beat/Idle Blink', (520, 420), 50, True)
+                        }
 
         #Rotação
         self.img_arrow_side_left = pygame.transform.rotate(self.arrow_side, -90)
@@ -93,11 +92,9 @@ class CharSelect:
 
     def _handle_selection(self):
         if self.selected_char_name not in self.available_chars:
-            self.show_block_msg_timer = 1500
             return 'char_select'
 
         if self.num_players == 2 and self.player_active == 2 and self.selected_char_name == self.choices.get(1):
-            self.show_chosen_msg_timer = 1500
             return 'char_select'
 
         self.choices[self.player_active] = self.selected_char_name
@@ -150,9 +147,6 @@ class CharSelect:
 
         self.selected_char_name = self.characters[self.selected_index_char]
 
-        if self.show_block_msg_timer > 0: self.show_block_msg_timer -= dt
-        if self.show_chosen_msg_timer > 0: self.show_chosen_msg_timer -= dt
-
         self.bg.update(dt)
         self.bg.draw(self.screen, (0, 0))
         self.screen.blit(self.overlay, (284, 180))
@@ -162,7 +156,7 @@ class CharSelect:
         self.char_assets['echo'].update(dt)
 
         center_idx = self.selected_index_char
-        left_idx = (self.selected_index_char - 1 + len(self.characters)) % len(self.characters)
+        left_idx = (self.selected_index_char - 1) % len(self.characters)
         right_idx = (self.selected_index_char + 1) % len(self.characters)
 
         characters_display = [
@@ -170,6 +164,8 @@ class CharSelect:
             (right_idx, self.spots['right']),
             (center_idx, self.spots['center'])
         ]
+
+        drawn_char_rects = {}
 
         for char_index, spot in characters_display:
             char_name = self.characters[char_index]
@@ -179,11 +175,15 @@ class CharSelect:
             scaled_img.set_alpha(spot['alpha'])
 
             char_rect = scaled_img.get_rect(centerx=spot['pos'][0], bottom=spot['pos'][1])
+            drawn_char_rects[char_name] = char_rect, scaled_img
 
             self.screen.blit(scaled_img, char_rect)
 
         if self.selected_char_name in self.available_chars and not self.selected_char_name == self.choices.get(1):
-            arrow_to_draw = self.arrow_select_p1
+            if self.player_active == 1:
+                arrow_to_draw = self.arrow_select_p1
+            else:
+                arrow_to_draw = self.arrow_select_p2
         else:
             arrow_to_draw = self.arrow_unable_select
 
@@ -204,11 +204,16 @@ class CharSelect:
         self.arrow_left_button.draw(self.screen)
         self.arrow_right_button.draw(self.screen)
 
-        if self.show_block_msg_timer > 0:
-            self.screen.blit(self.text_blocked, self.text_blocked_rect)
+        if self.num_players == 2 and self.player_active == 2:
+            p1_choice_name = self.choices[1]
+            p1_scaled_img = drawn_char_rects[p1_choice_name][1]
+            p1_rect = drawn_char_rects[p1_choice_name][0]
 
-        if self.show_chosen_msg_timer > 0:
-            self.screen.blit(self.text_chosen, self.text_chosen_rect)
+            p1_mask = pygame.mask.from_surface(p1_scaled_img)
+            outline_surf = pygame.Surface(p1_rect.size, pygame.SRCALPHA)
+            outline_points = p1_mask.outline()
+            pygame.draw.polygon(outline_surf, (50, 150, 255), outline_points, 5)
+            self.screen.blit(outline_surf, p1_rect.topleft)
 
         pygame.display.update()
         return 'char_select'

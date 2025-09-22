@@ -6,6 +6,8 @@ from source.menu import Menu
 from source.animation import Animation
 from source.player_select import PlayerSelect
 from source.char_select import CharSelect
+from source.music_select import MusicSelect
+from source.bg_select import BackgroundSelect
 
 pygame.init()
 pygame.mixer.init()
@@ -26,9 +28,9 @@ screen.blit(bg, (0,0))
 pygame.display.update()
 
 #Música
-pygame.mixer.music.load('assets/musicas/LupusNocte-Arcadewave.ogg')
+pygame.mixer.music.load('assets/musicas/menu/LupusNocte-Arcadewave.ogg')
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.set_volume(0.1)
 
 animated_bg = Animation("assets/menu/background_menu", screen_size)
 
@@ -40,14 +42,14 @@ state = 'menu'
 clock = pygame.time.Clock()
 fps = 60
 
-game_context = {
-    'players': 1
-}
+game_context = {}
 
 #Menu
 screens = {
     'menu': Menu(screen, animated_bg),
     'player_select': PlayerSelect(screen, animated_bg),
+    'music_select': MusicSelect(screen, animated_bg),
+    'bg_select': BackgroundSelect(screen, animated_bg)
 }
 
 while True:
@@ -83,7 +85,28 @@ while True:
 
         if isinstance(result, tuple):
             state = result[0]
-            game_context['character'] = result[1]
+            game_context['characters'] = result[1]
+
+        else:
+            state = result
+
+    elif state == 'music_select':
+        result = screens['music_select'].run(events, dt)
+
+        if isinstance(result, tuple):
+            state = result[0]
+            game_context['music_path'] = result[1]
+
+        else:
+            state = result
+            screens['char_select'] = CharSelect(screen, animated_bg, game_context['players'])
+
+    elif state == 'bg_select':
+        result = screens['bg_select'].run(events, dt)
+
+        if isinstance(result, tuple):
+            state = result[0]
+            game_context['bg_path'] = result[1]
 
         else:
             state = result
