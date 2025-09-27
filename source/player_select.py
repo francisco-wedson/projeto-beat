@@ -11,8 +11,8 @@ class PlayerSelect():
         self.mouse_pos = (0, 0)
 
         #Carregar assets
-        self.font_title = pygame.font.Font('assets/fontes/PressStart2P-Regular.ttf', 48)
-        self.font_x = pygame.font.Font('assets/fontes/Stencilia-A.ttf', 90)
+        self.font_title = pygame.font.Font('assets/fonts/PressStart2P-Regular.ttf', 48)
+        self.font_x = pygame.font.Font('assets/fonts/Stencilia-A.ttf', 90)
 
         self.img_solo = pygame.image.load('assets/menu/player_select/Echo_player_select.png').convert_alpha()
         self.img_vs1 = pygame.image.load('assets/menu/player_select/Beat_player_select.png').convert_alpha()
@@ -36,8 +36,15 @@ class PlayerSelect():
         self.hitbox_solo = pygame.Rect(435, 240, card_width, card_height)
         self.hitbox_vs = pygame.Rect(1035, 240, card_width, card_height)
 
-        self.overlay = pygame.Surface((1170, 720), pygame.SRCALPHA)
-        self.overlay.fill((0, 0, 0, 180))
+        self.overlay_size = (1170, 720)
+        self.overlay = pygame.Surface(self.overlay_size, pygame.SRCALPHA)
+        self.overlay_rect = self.overlay.get_rect(topleft=(375, 180))
+        pygame.draw.rect(
+            surface=self.overlay,
+            color=(0, 0, 0, 180),
+            rect=pygame.Rect(0, 0, self.overlay_size[0], self.overlay_size[1]),
+            border_radius=15
+        )
 
         self.img_solo_rect = self.img_solo.get_rect(center=(660, 520))
         self.img_vs1_rect = self.img_vs1.get_rect(center=(1160, 480))
@@ -97,7 +104,8 @@ class PlayerSelect():
 
         self.bg.update(dt)
         self.bg.draw(self.screen, (0, 0))
-        self.screen.blit(self.overlay, (375, 180))
+        self.screen.blit(self.overlay, self.overlay_rect)
+        pygame.draw.rect(self.screen, (234, 0, 255), self.overlay_rect, 3, border_radius=15)
 
         self.screen.blit(self.img_solo, self.img_solo_rect)
 

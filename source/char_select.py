@@ -23,40 +23,54 @@ class CharSelect:
         self.mouse_pos = (0, 0)
 
         #Carregar assets
-        self.font_title = pygame.font.Font('assets/fontes/PressStart2P-Regular.ttf', 48)
-        self.font_title_small = pygame.font.Font('assets/fontes/PressStart2P-Regular.ttf', 28)
+        self.font_title = pygame.font.Font('assets/fonts/PressStart2P-Regular.ttf', 48)
+        self.font_title_small = pygame.font.Font('assets/fonts/PressStart2P-Regular.ttf', 28)
 
-        self.arrow_select_p1 = pygame.image.load('assets/menu/char_select/selection_arrow_p1.png')
-        self.arrow_select_p2 = pygame.image.load('assets/menu/char_select/selection_arrow_p2.png')
-        self.arrow_unable_select = pygame.image.load('assets/menu/char_select/selection_arrow_not.png')
+        self.arrow_p1 = pygame.image.load('assets/menu/char_select/selection_arrow_p1.png')
+        self.arrow_p1_light = pygame.image.load('assets/menu/char_select/selection_arrow_p1_light.png')
+        self.arrow_p2 = pygame.image.load('assets/menu/char_select/selection_arrow_p2.png')
+        self.arrow_p2_light = pygame.image.load('assets/menu/char_select/selection_arrow_p2_light.png')
+        self.arrow_unable = pygame.image.load('assets/menu/char_select/selection_arrow_not.png')
+        self.arrow_unable_light = pygame.image.load('assets/menu/char_select/selection_arrow_not_light.png')
         self.arrow_side = pygame.image.load('assets/menu/char_select/side_arrow.png')
+        self.arrow_side_light = pygame.image.load('assets/menu/char_select/side_arrow_light.png')
 
-        self.arrow_select_p1 = pygame.transform.scale(self.arrow_select_p1, (75, 51))
-        self.arrow_select_p2 = pygame.transform.scale(self.arrow_select_p2, (75, 51))
-        self.arrow_unable_select = pygame.transform.scale(self.arrow_unable_select, (75, 51))
+        self.arrow_p1 = pygame.transform.scale(self.arrow_p1, (75, 51))
+        self.arrow_p1_light = pygame.transform.scale(self.arrow_p1_light, (75, 51))
+        self.arrow_p2 = pygame.transform.scale(self.arrow_p2, (75, 51))
+        self.arrow_p2_light = pygame.transform.scale(self.arrow_p2_light, (75, 51))
+        self.arrow_unable = pygame.transform.scale(self.arrow_unable, (75, 51))
+        self.arrow_unable_light = pygame.transform.scale(self.arrow_unable_light, (75, 51))
         self.arrow_side = pygame.transform.scale(self.arrow_side, (60, 34))
+        self.arrow_side_light = pygame.transform.scale(self.arrow_side_light, (60, 34))
 
         #Dicionário assets
         self.char_assets = {
-                        'pulse': Animation('assets/characters_animation/Pulse/Idle Blink', (520, 420), 50, True),
-                        'echo': Animation('assets/characters_animation/Echo/Locked', (520, 420), 50, True),
-                        'beat': Animation('assets/characters_animation/Beat/Idle Blink', (520, 420), 50, True)
+                        'pulse': Animation('assets/characters_animation/pulse/idle_blink', (520, 420), 20, True),
+                        'echo': Animation('assets/characters_animation/echo/locked', (520, 420), 20, True),
+                        'beat': Animation('assets/characters_animation/beat/idle_blink', (520, 420), 20, True)
                         }
 
         #Rotação
         self.img_arrow_side_left = pygame.transform.rotate(self.arrow_side, -90)
+        self.arrow_left_light = pygame.transform.rotate(self.arrow_side_light, -90)
         self.img_arrow_side_right = pygame.transform.flip(self.img_arrow_side_left, True, False)
+        self.arrow_right_light = pygame.transform.flip(self.arrow_left_light, True, False)
 
         #Calcula posições e Rects
-        self.overlay = pygame.Surface((1352, 540), pygame.SRCALPHA)
-        self.overlay.fill((0, 0, 0, 180))
+        self.overlay_size = (1352, 540)
+        self.overlay = pygame.Surface(self.overlay_size, pygame.SRCALPHA)
+        self.overlay_rect = self.overlay.get_rect(topleft=(284, 180))
+        pygame.draw.rect(
+            surface=self.overlay,
+            color=(0, 0, 0, 180),
+            rect=pygame.Rect(0, 0, self.overlay_size[0], self.overlay_size[1]),
+            border_radius=15
+        )
 
         #Spots
         base_size = (520, 420)
-        scale_factor_side = 0.8
-        side_width = int(base_size[0] * scale_factor_side)
-        side_height = int(base_size[1] * scale_factor_side)
-        side_size = (side_width, side_height)
+        side_size = int(base_size[0] * 0.8), int(base_size[1] * 0.8)
 
         self.spots = {
                 'left': {'size': side_size, 'pos': (344 + base_size[0]/2, 240 + base_size[1]), 'alpha': 150},
@@ -71,20 +85,24 @@ class CharSelect:
         self.green_color_selected = (144, 238, 144)
         self.color_red = (255, 0, 0)
         self.color_p1_border = (50, 150, 255)
+        self.color_overlay_border = (5, 18, 194)
 
         self.text_selec_normal = self.font_title.render("Selecionar", True, self.green_color_normal)
         self.text_selec_selected = self.font_title.render("Selecionar", True, self.green_color_selected)
         self.text_selec_rect = self.text_selec_normal.get_rect(center=(960, 652))
         self.highlight_rect = self.text_selec_rect.inflate(20, 20)
-        self.text_blocked = self.font_title_small.render("Personagem Bloqueado", True, self.color_red)
-        self.text_blocked_rect = self.text_blocked.get_rect(center=(960, 206))
-        self.text_chosen = self.font_title_small.render("Personagem Escolhido", True, self.color_red)
-        self.text_chosen_rect = self.text_chosen.get_rect(center=(960, 206))
 
         #Botões
         self.back_button = BackButton(304, 200)
-        self.arrow_left_button = Button(391, 447, self.img_arrow_side_left)
-        self.arrow_right_button = Button(1484, 447, self.img_arrow_side_right)
+        self.arrow_left_button = Button(391, 447, self.img_arrow_side_left, self.arrow_left_light)
+        self.arrow_right_button = Button(1484, 447, self.img_arrow_side_right, self.arrow_right_light)
+        self.arrow_p1_button = Button(945, 196, self.arrow_p1, self.arrow_p1_light)
+        self.arrow_p2_button = Button(945, 196, self.arrow_p2, self.arrow_p2_light)
+        self.arrow_unable_button = Button(945, 196, self.arrow_unable, self.arrow_unable_light)
+
+        #Timers
+        self.blick_timer = 0
+        self.blink_timer_interval = 350
 
     def _change_selection(self, direction):
         new_idx = (self.selected_index_char + direction + len(self.characters)) % len(self.characters)
@@ -144,12 +162,22 @@ class CharSelect:
 
         if self.text_selec_rect.collidepoint(self.mouse_pos): self.selected_index_menu = 1
         if self.back_button.check_hover(self.mouse_pos): self.selected_index_menu = 0
+        if self.arrow_left_button.check_hover(self.mouse_pos):
+            self.arrow_left_button.image = self.arrow_left_button.img_acesa
+        else:
+            self.arrow_left_button.image = self.arrow_left_button.img_apagada
+
+        if self.arrow_right_button.check_hover(self.mouse_pos):
+            self.arrow_right_button.image = self.arrow_right_button.img_acesa
+        else:
+            self.arrow_right_button.image = self.arrow_right_button.img_apagada
 
         self.selected_char_name = self.characters[self.selected_index_char]
 
         self.bg.update(dt)
         self.bg.draw(self.screen, (0, 0))
-        self.screen.blit(self.overlay, (284, 180))
+        self.screen.blit(self.overlay, self.overlay_rect)
+        pygame.draw.rect(self.screen, self.color_overlay_border, self.overlay_rect, 3, border_radius=15)
 
         self.char_assets['pulse'].update(dt)
         self.char_assets['beat'].update(dt)
@@ -181,13 +209,19 @@ class CharSelect:
 
         if self.selected_char_name in self.available_chars and not self.selected_char_name == self.choices.get(1):
             if self.player_active == 1:
-                arrow_to_draw = self.arrow_select_p1
+                arrow_to_draw = self.arrow_p1_button
             else:
-                arrow_to_draw = self.arrow_select_p2
+                arrow_to_draw = self.arrow_p2_button
         else:
-            arrow_to_draw = self.arrow_unable_select
+            arrow_to_draw = self.arrow_unable_button
 
-        self.screen.blit(arrow_to_draw, (945, 196))
+        self.blick_timer += dt
+
+        if self.blick_timer >= self.blink_timer_interval:
+            self.blick_timer = 0
+            arrow_to_draw.toggle_image()
+
+        arrow_to_draw.draw(self.screen)
 
         if self.selected_index_menu == 1:
             pygame.draw.rect(self.screen, self.green_color_selected, self.highlight_rect, 3, border_radius=15)
@@ -205,6 +239,7 @@ class CharSelect:
         self.arrow_right_button.draw(self.screen)
 
         if self.num_players == 2 and self.player_active == 2:
+            self.color_overlay_border = (57, 255, 20)
             p1_choice_name = self.choices[1]
             p1_scaled_img = drawn_char_rects[p1_choice_name][1]
             p1_rect = drawn_char_rects[p1_choice_name][0]

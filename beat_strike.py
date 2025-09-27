@@ -1,13 +1,14 @@
 import pygame
 from pygame.locals import *
 from sys import exit
-from source.game import Game
+from source.game import GameP1, GameP2
 from source.menu import Menu
 from source.animation import Animation
 from source.player_select import PlayerSelect
 from source.char_select import CharSelect
 from source.music_select import MusicSelect
 from source.bg_select import BackgroundSelect
+from source.fade_out import FadeOut
 
 pygame.init()
 pygame.mixer.init()
@@ -22,13 +23,14 @@ resolucao_monitor = screen_size
 screen = pygame.display.set_mode(resolucao_monitor, pygame.SCALED)
 
 #Evitar tela preta
-bg = pygame.image.load('assets/menu/background_menu/frame_00_delay-0.1s.png')
-bg = pygame.transform.scale(bg, resolucao_monitor)
-screen.blit(bg, (0,0))
+company_img = pygame.image.load('assets/menu/logos/Smash_Lemon.png')
+company_rect = company_img.get_rect(center=screen.get_rect().center)
+screen.fill((0, 0, 0))
+screen.blit(company_img, company_rect)
 pygame.display.update()
 
 #Música
-pygame.mixer.music.load('assets/musicas/menu/LupusNocte-Arcadewave.ogg')
+pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.1)
 
@@ -38,7 +40,7 @@ animated_bg = Animation("assets/menu/background_menu", screen_size)
 fps = 60
 
 #Estado atual
-state = 'menu'
+state = 'fade_out'
 clock = pygame.time.Clock()
 fps = 60
 
@@ -46,6 +48,7 @@ game_context = {}
 
 #Menu
 screens = {
+    'fade_out': FadeOut(screen, company_img, company_rect),
     'menu': Menu(screen, animated_bg),
     'player_select': PlayerSelect(screen, animated_bg),
     'music_select': MusicSelect(screen, animated_bg),
@@ -65,7 +68,10 @@ while True:
             if event.key == pygame.K_F11:
                 pygame.display.toggle_fullscreen()
 
-    if state == 'menu':
+    if state == 'fade_out':
+        state = screens['fade_out'].run(events, dt)
+
+    elif state == 'menu':
         state = screens['menu'].run(events, dt)
 
     elif state == 'player_select':
@@ -95,7 +101,7 @@ while True:
 
         if isinstance(result, tuple):
             state = result[0]
-            game_context['music_path'] = result[1]
+            game_context['music'] = result[1]
 
         else:
             state = result
@@ -108,17 +114,24 @@ while True:
             state = result[0]
             game_context['bg_path'] = result[1]
 
+            if game_context['players'] == 1:
+                screens['game'] = GameP1(screen, game_context)
+            elif game_context['players'] == 2:
+                screens['game'] = GameP2(screen, game_context)
+
         else:
             state = result
 
     elif state == 'game':
-        pygame.mixer.music.stop()
-
-        game = Game(screen, game_context)
-        state = game.run()
+        pygame.mouse.set_visible(False)
+        state = screens['game'].run(events, dt)
 
         if state == 'menu':
+            pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
             pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
+        if state != 'game':
+            pygame.mouse.set_visible(True)
 
     elif state == 'quit':
         pygame.quit()

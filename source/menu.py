@@ -5,6 +5,9 @@ class Menu():
     def __init__(self, screen, background):
         self.screen = screen
         self.bg = background
+        self.game_logo = pygame.image.load('assets/menu/logos/Beat_Strike.png')
+        #self.game_logo = pygame.transform.scale(self.game_logo, (750, 750))
+        self.game_logo_rect = self.game_logo.get_rect(center=(960, 220))
 
         self.buttons_name = ['jogar', 'loja', 'opcoes', 'sair']
         self.selected_index = 0
@@ -69,6 +72,7 @@ class Menu():
                 button.image = button.img_apagada
 
         self.bg.draw(self.screen, (0, 0))
+        self.screen.blit(self.game_logo, self.game_logo_rect)
 
         for button in self.buttons:
             self.buttons[button].draw(self.screen)
