@@ -2,13 +2,15 @@ import pygame
 from pathlib import Path
 
 class Animation:
-    def __init__ (self, folder_path, size=(0, 0), speed=10, mask=False, loop=True):
+    def __init__ (self, folder_path, size=(0, 0), speed=10, mask=False, loop=True, flip=False):
         self.frames = []
         path = Path(folder_path)
         for file_path in sorted(path.glob("*.png")):
             img = pygame.image.load(file_path).convert_alpha()
             if size != (0, 0):
                 img = pygame.transform.scale(img, size)
+            if flip:
+                img = pygame.transform.flip(img, True, False)
             self.frames.append(img)
 
         self.index = 0

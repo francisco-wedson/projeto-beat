@@ -123,15 +123,34 @@ while True:
             state = result
 
     elif state == 'game':
-        pygame.mouse.set_visible(False)
         state = screens['game'].run(events, dt)
+
+        if state != 'game':
+            pygame.mouse.set_visible(True)
 
         if state == 'menu':
             pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.1)
-        if state != 'game':
-            pygame.mouse.set_visible(True)
+
+        elif state == 'score_screen':
+            screens['score_screen'] = ScoreScreen(screens, game_context['bg'])
+
+    elif state == 'restart_game':
+        if game_context['players'] == 1:
+            screens['game'] = GameP1(screen, game_context)
+        elif game_context['players'] == 2:
+            screens['game'] = GameP2(screen, game_context)
+        state = 'game'
+
+    elif state == 'score_screen':
+        pygame.mouse.set_visible(True)
+        state = screens['score_screen'].run(events, dt)
+
+        if state == 'menu':
+            pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
 
     elif state == 'quit':
         pygame.quit()
