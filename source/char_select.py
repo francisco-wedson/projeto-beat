@@ -11,7 +11,7 @@ class CharSelect:
         self.num_players = num_players
 
         self.characters = ['pulse', 'echo', 'beat']
-        self.available_chars = ['pulse', 'beat']
+        self.available_chars = ['pulse', 'echo', 'beat']
 
         self.options = ['voltar', 'selecionar']
         self.selected_index_menu = 1
@@ -47,7 +47,7 @@ class CharSelect:
         #Dicionário assets
         self.char_assets = {
                         'pulse': Animation('assets/characters_animation/pulse/idle_blink', (520, 420), 20, True),
-                        'echo': Animation('assets/characters_animation/echo/locked', (520, 420), 20, True),
+                        'echo': Animation('assets/characters_animation/echo/idle_blink', (520, 420), 20, True),
                         'beat': Animation('assets/characters_animation/beat/idle_blink', (520, 420), 20, True)
                         }
 
@@ -163,14 +163,14 @@ class CharSelect:
         if self.text_selec_rect.collidepoint(self.mouse_pos): self.selected_index_menu = 1
         if self.back_button.check_hover(self.mouse_pos): self.selected_index_menu = 0
         if self.arrow_left_button.check_hover(self.mouse_pos):
-            self.arrow_left_button.image = self.arrow_left_button.img_acesa
+            self.arrow_left_button.image = self.arrow_left_button.img_on
         else:
-            self.arrow_left_button.image = self.arrow_left_button.img_apagada
+            self.arrow_left_button.image = self.arrow_left_button.img_off
 
         if self.arrow_right_button.check_hover(self.mouse_pos):
-            self.arrow_right_button.image = self.arrow_right_button.img_acesa
+            self.arrow_right_button.image = self.arrow_right_button.img_on
         else:
-            self.arrow_right_button.image = self.arrow_right_button.img_apagada
+            self.arrow_right_button.image = self.arrow_right_button.img_off
 
         self.selected_char_name = self.characters[self.selected_index_char]
 
@@ -226,13 +226,13 @@ class CharSelect:
         if self.selected_index_menu == 1:
             pygame.draw.rect(self.screen, self.green_color_selected, self.highlight_rect, 3, border_radius=15)
             self.screen.blit(self.text_selec_selected, self.text_selec_rect)
-            self.back_button.image = self.back_button.img_apagada
+            self.back_button.image = self.back_button.img_off
             self.back_button.draw(self.screen)
 
         else:
             self.screen.blit(self.text_selec_normal, self.text_selec_rect)
             pygame.draw.rect(self.screen, self.color_selected, self.back_button, 3, border_radius=15)
-            self.back_button.image = self.back_button.img_acesa
+            self.back_button.image = self.back_button.img_on
             self.back_button.draw(self.screen)
 
         self.arrow_left_button.draw(self.screen)

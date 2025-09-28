@@ -1,10 +1,10 @@
 import pygame
 
 class Button():
-    def __init__(self, x, y, img_apagada, img_acesa=None, center=None):
-        self.img_apagada = img_apagada
-        self.img_acesa = img_acesa
-        self.image = self.img_apagada
+    def __init__(self, x, y, img_off, img_on=None, center=None):
+        self.img_off = img_off
+        self.img_on = img_on
+        self.image = self.img_off
         if center:
             self.rect = self.image.get_rect(center=(x, y))
         else:
@@ -14,10 +14,10 @@ class Button():
         screen.blit(self.image, (self.rect))
 
     def toggle_image(self):
-        if self.image == self.img_apagada:
-            self.image = self.img_acesa
+        if self.image == self.img_off:
+            self.image = self.img_on
         else:
-            self.image = self.img_apagada
+            self.image = self.img_off
 
     def check_click(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:

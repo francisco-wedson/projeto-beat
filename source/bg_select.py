@@ -111,9 +111,13 @@ class BackgroundSelect:
         if self.play_button.check_hover(self.mouse_pos):
             self.selected_index_menu = 1
         if self.arrow_left_button.check_hover(self.mouse_pos):
-            self.arrow_left_button.image = self.arrow_left_button.img_acesa
+            self.arrow_left_button.image = self.arrow_left_button.img_on
+        else:
+            self.arrow_left_button.image = self.arrow_left_button.img_off
         if self.arrow_right_button.check_hover(self.mouse_pos):
-            self.arrow_right_button.image = self.arrow_right_button.img_acesa
+            self.arrow_right_button.image = self.arrow_right_button.img_on
+        else:
+            self.arrow_right_button.image = self.arrow_right_button.img_off
 
         self.bg.update(dt)
         self.bg.draw(self.screen, (0, 0))
@@ -144,12 +148,12 @@ class BackgroundSelect:
         self.arrow_right_button.draw(self.screen)
 
         if self.selected_index_menu == 1:
-            self.back_button.image = self.back_button.img_apagada
-            self.play_button.image = self.play_button.img_acesa
+            self.back_button.image = self.back_button.img_off
+            self.play_button.image = self.play_button.img_on
 
         else:
-            self.back_button.image = self.back_button.img_acesa
-            self.play_button.image = self.play_button.img_apagada
+            self.back_button.image = self.back_button.img_on
+            self.play_button.image = self.play_button.img_off
 
         self.back_button.draw(self.screen)
         self.play_button.draw(self.screen)

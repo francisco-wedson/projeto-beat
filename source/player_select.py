@@ -110,12 +110,12 @@ class PlayerSelect():
         self.screen.blit(self.img_solo, self.img_solo_rect)
 
         if self.selected_index == 0:
-            self.back_button.image = self.back_button.img_acesa
+            self.back_button.image = self.back_button.img_on
             self.back_button.draw(self.screen)
             pygame.draw.rect(self.screen, self.color_selected, self.back_button, 3, border_radius=15)
 
         else:
-            self.back_button.image = self.back_button.img_apagada
+            self.back_button.image = self.back_button.img_off
             self.back_button.draw(self.screen)
 
         if self.selected_index == 1:

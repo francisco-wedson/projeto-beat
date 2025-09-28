@@ -6,9 +6,10 @@ import os
 import json
 
 class GameBase():
-    def __init__(self, screen, game_context):
+    def __init__(self, screen, game_context, config):
         self.screen = screen
         self.game_context = game_context
+        self.config = config
         self.first_note_spawned = False
         pygame.mixer.music.stop()
         self.bg = Animation(self.game_context['bg_path'])
@@ -42,10 +43,6 @@ class GameBase():
             (40, "Brabo!", self.font_40, 3),
             (60, "Insano!", self.font_60, 4),
         ]
-
-        self.running = True
-
-        self._load_paused_variables()
 
     def _init_player(self, config):
         # -lane_x, lane_keys, overlay_rect
@@ -97,6 +94,17 @@ class GameBase():
         player['combo_texts'] = []
         player['current_idx'] = 0
         return player
+
+    def _keys_to_pygame(self, keybinds_player):
+        order = ['left', 'down', 'up', 'right']
+        pygame_keys = {}
+        for idx, k in enumerate(order):
+            key_str = keybinds_player.get(k, "")
+            keycode = None
+
+            keycode = pygame.key.key_code(key_str)
+            pygame_keys[idx] = keycode
+        return pygame_keys
 
     def _spawn_note(self, player, lane, duration):
         if not self.first_note_spawned:
@@ -342,132 +350,13 @@ class GameBase():
             else:
                 break
 
-    def _load_paused_variables(self):
-        self.pause_time = 0
-        self.music_paused = False
-        self.paused_idx = 0
-        self.paused_options = ['return', 'restart', 'continue']
-        self.font_paused = pygame.font.Font('assets/fonts/PressStart2P-Regular.ttf', 52)
-        self.paused_text = self.font_paused.render('Pausado', True, (0, 0, 0))
-        self.paused_text_rect = self.paused_text.get_rect(center=(960, 360))
-
-        overlay_size_paused = (640, 360)
-        self.overlay_paused = pygame.Surface(overlay_size_paused, pygame.SRCALPHA)
-        self.overlay_paused_rect = self.overlay_paused.get_rect(center=(960, 540))
-        pygame.draw.rect(
-            surface=self.overlay_paused,
-            color=(227, 193, 143, 120),
-            rect=pygame.Rect(0, 0, overlay_size_paused[0], overlay_size_paused[1]),
-            border_radius=15
-        )
-
-        self.overlay_text_rect = self.paused_text_rect.inflate(40, 10)
-        self.overlay_text = pygame.Surface(self.overlay_text_rect.size, pygame.SRCALPHA)
-        pygame.draw.rect(
-            surface=self.overlay_text,
-            color=(255, 255, 255, 255),
-            rect=self.overlay_text.get_rect(),
-            border_radius=15
-        )
-        return_img = pygame.image.load('assets/game/return_button.png')
-        return_img = pygame.transform.scale(return_img, (146, 160))
-        self.return_button = Button(self.overlay_paused_rect.left + 120,
-                                    self.overlay_paused_rect.centery,
-                                    return_img, center=True)
-
-        restart_img = pygame.image.load('assets/game/restart_button.png')
-        restart_img = pygame.transform.scale(restart_img, (160, 160))
-        self.restart_button = Button(self.overlay_paused_rect.left + 320,
-                                    self.overlay_paused_rect.centery,
-                                    restart_img, center=True)
-
-        continue_img = pygame.image.load('assets/game/continue_button.png')
-        continue_img = pygame.transform.scale(continue_img, (160, 160))
-        self.continue_button = Button(1180, 620, continue_img)
-        self.continue_button = Button(self.overlay_paused_rect.left + 520,
-                                    self.overlay_paused_rect.centery,
-                                    continue_img, center=True)
-
-    def _draw_pause_menu(self):
-        self.screen.blit(self.overlay_paused, self.overlay_paused_rect)
-        pygame.draw.rect(self.screen, (234, 0, 255), self.overlay_paused_rect, 3, border_radius=15)
-        self.screen.blit(self.overlay_text, self.overlay_text_rect)
-        pygame.draw.rect(self.screen, (234, 0, 255), self.overlay_text_rect, 3, border_radius=15)
-        self.screen.blit(self.paused_text, self.paused_text_rect)
-
-        self.return_button.draw(self.screen)
-        self.restart_button.draw(self.screen)
-        self.continue_button.draw(self.screen)
-
-        if self.paused_idx == 0:
-            rect = self.return_button.rect.inflate(10, 10)
-            pygame.draw.rect(self.screen, (255, 255, 255), rect, 3, border_radius=15)
-        if self.paused_idx == 1:
-            rect = self.restart_button.rect.inflate(10, 10)
-            pygame.draw.rect(self.screen, (255, 255, 255), rect, 3, border_radius=15)
-        if self.paused_idx == 2:
-            rect = self.continue_button.rect.inflate(10, 10)
-            pygame.draw.rect(self.screen, (255, 255, 255), rect, 3, border_radius=15)
-
-    def _handle_pause_menu(self, events, dt):
-        pygame.mouse.set_visible(True)
-
-        if not self.music_paused:
-            pygame.mixer.music.pause()
-            self.music_paused = True
-
-        self.mouse_pos = pygame.mouse.get_pos()
-
-        for event in events:
-            if event.type == pygame.QUIT:
-                pygame.mixer.music.stop()
-                return 'quit'
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    self.paused_idx = (self.paused_idx + 1) % len(self.paused_options)
-
-                if event.key == pygame.K_LEFT:
-                    self.paused_idx = (self.paused_idx - 1) % len(self.paused_options)
-
-                if event.key == pygame.K_RETURN:
-                    selected_button = self.paused_options[self.paused_idx]
-                    if selected_button == 'return': return 'menu'
-                    if selected_button == 'restart': return 'restart_game'
-                    if selected_button == 'continue':
-                        pygame.mixer.music.set_volume(1.0)
-                        pygame.mixer.music.unpause()
-                        pygame.mixer.music.set_volume(1.0)
-                        self.music_paused = False
-                        pygame.mouse.set_visible(False)
-                        self.running = True
-                        return None
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.return_button.check_click(event): return 'menu'
-                if self.restart_button.check_click(event): return 'restart_game'
-                if self.continue_button.check_click(event):
-                    pygame.mixer.music.unpause()
-                    self.music_paused = False
-                    pygame.mouse.set_visible(False)
-                    self.running = True
-                    return None
-
-        if self.return_button.check_hover(self.mouse_pos): self.paused_idx = 0
-        if self.restart_button.check_hover(self.mouse_pos): self.paused_idx = 1
-        if self.continue_button.check_hover(self.mouse_pos): self.paused_idx = 2
-
-        self.bg.update(dt)
-        self.bg.draw(self.screen, (0,0))
-        self._draw_pause_menu()
-
-        return None
-
 class GameP1(GameBase):
-    def __init__(self, screen, game_context):
-        super().__init__(screen, game_context)
+    def __init__(self, screen, game_context, config):
+        super().__init__(screen, game_context, config)
+        lane_keys = self._keys_to_pygame(self.config['keybinds']['player1'])
         P1_CONFIG = {
             'lane_x': [805, 935, 1065, 1195],
-            'lane_keys': {0: pygame.K_d, 1: pygame.K_f, 2: pygame.K_j, 3: pygame.K_k},
+            'lane_keys': lane_keys,
             'overlay_rect': (775, 30),
             'char_rect': (410, 540),
             'score_rect': (430, 260),
@@ -484,47 +373,52 @@ class GameP1(GameBase):
         self.is_music_playing = False
 
     def run(self, events, dt):
-        if self.running:
-            pygame.mouse.set_visible(False)
-            if not self.is_music_playing:
-                pygame.mixer.music.load(self.music_path)
-                pygame.mixer.music.set_volume(0.4)
-                pygame.mixer.music.play()
-                self.is_music_playing = True
+        pygame.mouse.set_visible(False)
+        if not self.is_music_playing:
+            pygame.mixer.music.load(self.music_path)
+            pygame.mixer.music.set_volume(self.config['volume']['game'])
+            pygame.mixer.music.play()
+            self.is_music_playing = True
 
-            current_time = pygame.mixer.music.get_pos() / 1000.0
-            self._update_notes_spawn(self.player, self.chart, current_time)
+        current_time = pygame.mixer.music.get_pos() / 1000.0
+        self._update_notes_spawn(self.player, self.chart, current_time)
 
-            keys = pygame.key.get_pressed()
-            self._update_player(self.player, keys, dt)
+        if not pygame.mixer.music.get_busy() and self.is_music_playing:
+            pygame.mixer.music.stop()
+            return 'score_screen', self.player['score_board'], self.player['score']
 
-            for event in events:
-                if event.type == pygame.QUIT:
+        keys = pygame.key.get_pressed()
+        self._update_player(self.player, keys, dt)
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.mixer.music.stop()
+                return 'quit'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     pygame.mixer.music.stop()
-                    return 'quit'
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    return 'menu'
+                if event.key == pygame.K_F5:
                     pygame.mixer.music.stop()
-                    self.running = False
-                if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player['lane_keys'].values():
-                    self._handle_input_player(self.player, event)
+                    return 'restart_game'
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player['lane_keys'].values():
+                self._handle_input_player(self.player, event)
 
-            self.bg.update(dt)
-            self.bg.draw(self.screen, (0,0))
-            self._draw_player(self.player)
-        else:
-            result = self._handle_pause_menu(events, dt)
-            if result:
-                return result
+        self.bg.update(dt)
+        self.bg.draw(self.screen, (0,0))
+        self._draw_player(self.player)
 
         pygame.display.update()
         return 'game'
 
 class GameP2(GameBase):
-    def __init__(self, screen, game_context):
-        super().__init__(screen, game_context)
+    def __init__(self, screen, game_context, config):
+        super().__init__(screen, game_context, config)
+        lane_keys_p1 = self._keys_to_pygame(config['keybinds']['player1'])
+        lane_keys_p2 = self._keys_to_pygame(config['keybinds']['player2'])
         P1_CONFIG = {
             'lane_x': [50, 180, 310, 440],
-            'lane_keys': {0: pygame.K_d, 1: pygame.K_f, 2: pygame.K_j, 3: pygame.K_k},
+            'lane_keys': lane_keys_p1,
             'overlay_rect': (30, 30),
             'char_rect': (820, 540),
             'score_rect': (840, 260),
@@ -534,7 +428,7 @@ class GameP2(GameBase):
         }
         P2_CONFIG = {
             'lane_x': [1349, 1479, 1609, 1739],
-            'lane_keys': {0: pygame.K_x, 1: pygame.K_c, 2: pygame.K_n, 3: pygame.K_m},
+            'lane_keys': lane_keys_p2,
             'overlay_rect': (1329, 30),
             'char_rect': (1100, 540),
             'score_rect': (1120, 260),
@@ -552,43 +446,46 @@ class GameP2(GameBase):
         self.is_music_playing = False
 
     def run(self, events, dt):
-        if self.running:
-            pygame.mouse.set_visible(False)
-            if not self.is_music_playing:
-                pygame.mixer.music.load(self.music_path)
-                pygame.mixer.music.set_volume(0.4)
-                pygame.mixer.music.play()
-                self.is_music_playing = True
+        pygame.mouse.set_visible(False)
+        if not self.is_music_playing:
+            pygame.mixer.music.load(self.music_path)
+            pygame.mixer.music.set_volume(self.config['volume']['game'])
+            pygame.mixer.music.play()
+            self.is_music_playing = True
 
-            current_time = pygame.mixer.music.get_pos() / 1000.0
-            self._update_notes_spawn(self.player_1, self.chart, current_time)
-            self._update_notes_spawn(self.player_2, self.chart, current_time)
+        current_time = pygame.mixer.music.get_pos() / 1000.0
+        self._update_notes_spawn(self.player_1, self.chart, current_time)
+        self._update_notes_spawn(self.player_2, self.chart, current_time)
 
-            keys = pygame.key.get_pressed()
-            self._update_player(self.player_1, keys, dt)
-            self._update_player(self.player_2, keys, dt)
+        if not pygame.mixer.music.get_busy() and self.is_music_playing:
+            pygame.mixer.music.stop()
+            return 'score_screen', self.player_1['score_board'], self.player_1['score'], self.player_2['score_board'], self.player_2['score']
 
-            for event in events:
-                if event.type == pygame.QUIT:
+        keys = pygame.key.get_pressed()
+        self._update_player(self.player_1, keys, dt)
+        self._update_player(self.player_2, keys, dt)
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.mixer.music.stop()
+                return 'quit'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     pygame.mixer.music.stop()
-                    return 'quit'
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    return 'menu'
+                if event.key == pygame.K_F5:
                     pygame.mixer.music.stop()
-                    self.running = False
-                if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player_1['lane_keys'].values():
-                    self._handle_input_player(self.player_1, event)
+                    return 'restart_game'
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player_1['lane_keys'].values():
+                self._handle_input_player(self.player_1, event)
 
-                if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player_2['lane_keys'].values():
-                    self._handle_input_player(self.player_2, event)
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP and event.key in self.player_2['lane_keys'].values():
+                self._handle_input_player(self.player_2, event)
 
-            self.bg.update(dt)
-            self.bg.draw(self.screen, (0,0))
-            self._draw_player(self.player_1)
-            self._draw_player(self.player_2)
-        else:
-            result = self._handle_pause_menu(events, dt)
-            if result:
-                return result
+        self.bg.update(dt)
+        self.bg.draw(self.screen, (0,0))
+        self._draw_player(self.player_1)
+        self._draw_player(self.player_2)
 
         pygame.display.update()
         return 'game'

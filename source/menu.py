@@ -6,10 +6,9 @@ class Menu():
         self.screen = screen
         self.bg = background
         self.game_logo = pygame.image.load('assets/menu/logos/Beat_Strike.png')
-        #self.game_logo = pygame.transform.scale(self.game_logo, (750, 750))
         self.game_logo_rect = self.game_logo.get_rect(center=(960, 220))
 
-        self.buttons_name = ['jogar', 'loja', 'opcoes', 'sair']
+        self.buttons_name = ['jogar', 'opcoes', 'sair']
         self.selected_index = 0
 
         self.mouse_pos = (0, 0)
@@ -20,27 +19,24 @@ class Menu():
         self.buttons = {}
         y = 460
 
-        for botao in self.buttons_name:
-            caminho_apagada = f"assets/menu/buttons/{botao}_button_no_light.png"
-            img_apagada = pygame.image.load(caminho_apagada).convert_alpha()
-            img_apagada = pygame.transform.scale(img_apagada, (318, 84))
+        for button in self.buttons_name:
+            path_off = f"assets/menu/buttons/{button}_button_no_light.png"
+            img_off = pygame.image.load(path_off).convert_alpha()
+            img_off = pygame.transform.scale(img_off, (318, 84))
 
-            caminho_acesa = f"assets/menu/buttons/{botao}_button_light.png"
-            img_acesa = pygame.image.load(caminho_acesa).convert_alpha()
-            img_acesa = pygame.transform.scale(img_acesa, (318, 84))
+            path_on = f"assets/menu/buttons/{button}_button_light.png"
+            img_on = pygame.image.load(path_on).convert_alpha()
+            img_on = pygame.transform.scale(img_on, (318, 84))
 
-            self.buttons[botao] = Button(801, y, img_apagada, img_acesa)
+            self.buttons[button] = Button(801, y, img_off, img_on)
             y += 114
 
     def run(self, events, dt):
-        mouse_pos = pygame.mouse.get_pos()
+        self.mouse_pos = pygame.mouse.get_pos()
 
         for event in events:
             if event.type == pygame.QUIT:
                 return 'quit'
-
-            if event.type == pygame.MOUSEMOTION:
-                self.mouse_pos = event.pos
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
@@ -52,24 +48,26 @@ class Menu():
                 if event.key == pygame.K_RETURN:
                     selected_button = self.buttons_name[self.selected_index]
                     if selected_button == 'jogar': return 'player_select'
+                    elif selected_button == 'opcoes': return 'options'
                     elif selected_button == 'sair': return 'quit'
 
             if self.buttons['jogar'].check_click(event): return 'player_select'
+            if self.buttons['opcoes'].check_click(event): return 'options'
             elif self.buttons['sair'].check_click(event): return 'quit'
 
         self.bg.update(dt)
 
         for i, name in enumerate(self.buttons_name):
-            if self.buttons[name].check_hover(mouse_pos):
+            if self.buttons[name].check_hover(self.mouse_pos):
                 self.selected_index = i
                 break
 
         for i, name in enumerate(self.buttons_name):
             button = self.buttons[name]
             if i == self.selected_index:
-                button.image = button.img_acesa
+                button.image = button.img_on
             else:
-                button.image = button.img_apagada
+                button.image = button.img_off
 
         self.bg.draw(self.screen, (0, 0))
         self.screen.blit(self.game_logo, self.game_logo_rect)

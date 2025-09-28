@@ -2,11 +2,49 @@
   "All The Things She Said": {
     "artist": "t.A.T.u",
     "time": "03:33",
-    "year": "2002"
+    "year": "2002",
+    "difficulty": 1
+  },
+  "Beat It": {
+    "artist": "Michael Jackson",
+    "time": "02:42",
+    "year": "1982",
+    "difficulty": 3
+  },
+  "Enemy": {
+    "artist": "Imagine Dragon",
+    "time": "02:13",
+    "year": "2021",
+    "difficulty": 1
+  },
+  "Hohoemi no Bakudan": {
+    "artist": "Matsuko Mawatari",
+    "time": "01:26",
+    "year": "1993",
+    "difficulty": 1
+  },
+  "Ichirin no Hana": {
+    "artist": "High and Mighty Color",
+    "time": "01:29",
+    "year": "2006",
+    "difficulty": 1
   },
   "Rebel Yell": {
     "artist": "Billy Idol",
     "time": "02:05",
-    "year": "1983"
+    "year": "1983",
+    "difficulty": 1
+  },
+  "Runaway (U & I)": {
+    "artist": "Galantis",
+    "time": "01:59",
+    "year": "2014",
+    "difficulty": 2
+  },
+  "Pompeii": {
+    "artist": "Bastille",
+    "time": "02:31",
+    "year": "2013",
+    "difficulty": 2
   }
 }

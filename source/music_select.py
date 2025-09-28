@@ -1,5 +1,6 @@
 import pygame
 import json
+import os
 from .button import BackButton
 
 class MusicSelect:
@@ -7,7 +8,7 @@ class MusicSelect:
         #Preparação
         self.screen = screen
         self.bg = background
-        self.music = ['All The Things She Said', 'Rebel Yell']
+        self.music = ['All The Things She Said', 'Beat It', 'Enemy', 'Hohoemi no Bakudan', 'Ichirin no Hana', 'Rebel Yell', 'Runaway (U & I)', 'Pompeii']
         self.options = [self.music, 'voltar', 'selecionar']
         self.music_info = {}
         self.mouse_pos = (0, 0)
@@ -52,6 +53,12 @@ class MusicSelect:
             border_radius=15
         )
 
+        #Img star
+        self.star_img = pygame.image.load('assets/menu/music_select/star.png')
+        self.star_img = pygame.transform.scale(self.star_img, (100, 100))
+        self.star_empty_img = pygame.image.load('assets/menu/music_select/star_empty.png')
+        self.star_empty_img = pygame.transform.scale(self.star_empty_img, (100, 100))
+
         #Music Info
         with open('assets/menu/music_select/music_info.json', 'r', encoding='utf-8') as f:
             self.music_info_bruto = json.load(f)
@@ -64,7 +71,12 @@ class MusicSelect:
         y_music = 160
         for music, info in self.music_info_bruto.items():
             self.music_info[music] = info.copy()
-            self.music_info[music]['image_path'] = f'assets/menu/music_select/{music}/{music}.jpg'
+
+            music_folder = f'assets/menu/music_select/{music}'
+            image_files = [f for f in os.listdir(music_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp'))]
+            if image_files:
+                self.music_info[music]['image_path'] = os.path.join(music_folder, image_files[0])
+
             self.music_info[music]['text_info'] = self.font_info.render(music, True, self.color_white)
             self.music_info[music]['text_normal'] = self.font_music.render(music, True, self.color_normal)
             self.music_info[music]['text_selected'] = self.font_music.render(music, True, self.color_selected)
@@ -92,6 +104,18 @@ class MusicSelect:
         self.screen.blit(info['year'], (1190, 260))
         self.screen.blit(info['time'], (1190, 295))
 
+        difficulty = info['difficulty']
+        max_difficulty = 3
+        x_star = 1180
+        y_star = 320
+        for num_star in range(difficulty):
+            self.screen.blit(self.star_img, (x_star, y_star))
+            x_star += 120
+
+        for num_empty_star in range(max_difficulty - difficulty):
+            self.screen.blit(self.star_empty_img, (x_star, y_star))
+            x_star += 120
+
     def run(self, events, dt):
         self.mouse_pos = pygame.mouse.get_pos()
 
@@ -106,10 +130,10 @@ class MusicSelect:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE: return 'char_select'
                 if event.key == pygame.K_UP and self.selected_index_menu == 0:
-                    self.selected_index_music = (self.selected_index_music + 1) % len(self.music)
+                    self.selected_index_music = (self.selected_index_music - 1) % len(self.music)
 
                 if event.key == pygame.K_DOWN and self.selected_index_menu == 0:
-                    self.selected_index_music = (self.selected_index_music - 1) % len(self.music)
+                    self.selected_index_music = (self.selected_index_music + 1) % len(self.music)
 
                 if event.key == pygame.K_RIGHT:
                     self.selected_index_menu = (self.selected_index_menu + 1) % len(self.options)
@@ -119,7 +143,7 @@ class MusicSelect:
 
                 if event.key == pygame.K_RETURN:
                     if self.selected_index_menu == 1: return 'char_select'
-                    else: return 'bg_select', self.music[self.selected_index_music]
+                    elif self.selected_index_menu == 2: return 'bg_select', self.music[self.selected_index_music]
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.back_button.check_click(event): return 'char_select'
@@ -152,17 +176,17 @@ class MusicSelect:
 
         if self.selected_index_menu == 1:
             pygame.draw.rect(self.screen, self.color_white, self.back_button, 3, border_radius=15)
-            self.back_button.image = self.back_button.img_acesa
+            self.back_button.image = self.back_button.img_on
             self.back_button.draw(self.screen)
             self.screen.blit(self.select_button_normal, self.select_button_rect)
 
         elif self.selected_index_menu == 2:
-            self.back_button.image = self.back_button.img_apagada
+            self.back_button.image = self.back_button.img_off
             self.back_button.draw(self.screen)
             self.screen.blit(self.select_button_selected, self.select_button_rect)
 
         else:
-            self.back_button.image = self.back_button.img_apagada
+            self.back_button.image = self.back_button.img_off
             self.back_button.draw(self.screen)
             self.screen.blit(self.select_button_normal, self.select_button_rect)
 

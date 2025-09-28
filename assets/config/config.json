@@ -1,0 +1,20 @@
+{
+    "volume": {
+        "menu": 0.2,
+        "game": 0.4
+    },
+    "keybinds": {
+        "player1": {
+            "left": "d",
+            "down": "f",
+            "up": "j",
+            "right": "k"
+        },
+        "player2": {
+            "left": "x",
+            "down": "c",
+            "up": "n",
+            "right": "m"
+        }
+    }
+}
