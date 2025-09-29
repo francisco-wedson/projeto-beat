@@ -3,8 +3,6 @@ import json
 import os
 from .button import BackButton
 
-CONFIG_PATH = "assets/config/config.json"
-
 class OptionsMenu:
     def __init__(self, screen, background, config):
         self.screen = screen
