@@ -22,7 +22,7 @@ class Template(pygame.sprite.Sprite):
             self.image = self.img
 
 class Note(pygame.sprite.Sprite):
-    def __init__(self, x, lane, duration=0, speed=1300):
+    def __init__(self, x, lane, duration=0, speed=1100):
         y = 1080
         super().__init__()
 
