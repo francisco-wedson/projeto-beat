@@ -8,6 +8,7 @@ Inspirados em clássicos como **Guitar Hero**, **StepMania** e outros.
 Para rodar o jogo é necessário:
 
 **Python 3.10+**
+
 **Pygame 2.6.1**
 
 e caso queira:
@@ -15,9 +16,10 @@ e caso queira:
 
 ## 🛠️ Instalação
 1. **Instale o Python 3.10+**:
+
   instale em: [Download Python](https://www.python.org/downloads)
 
-2. **Opcional: Instale o Git**:
+2. **Opcional - Instale o Git**:
 
   instale em: [Download Git](https://git-scm.com/downloads)
 
@@ -38,22 +40,35 @@ python beat_strike.py
 
 ## 🎮 Controles
 **Menu**
+
 ➱ Voltar: Esq
+
 ➱ Selecionar: Enter
 
 **Game**
+
 ➱ Voltar para o menu: Esq
+
 ➱ Reiniciar jogo: F5
 
 As teclas para jogar são configuráveis, porém o padrão é:
+
 **✤ Player 1**
+
 Esquerda: a
+
 Cima: w
+
 Baixo: s
+
 Direita: d
 
 **✤ Player 2**
+
 Esquerda: Seta Esquerda
+
 Cima: Seta Cima
+
 Baixo: Seta Baixo
+
 Direita: Seta Direita
