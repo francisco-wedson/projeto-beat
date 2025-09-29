@@ -4,7 +4,7 @@ import os
 from .button import BackButton
 
 class OptionsMenu:
-    def __init__(self, screen, background, config):
+    def __init__(self, screen, background, config, config_path='assets/config/config.json'):
         self.screen = screen
         self.bg = background
         self.selected_idx = 0
@@ -22,6 +22,7 @@ class OptionsMenu:
         self.color_selected = (255, 255, 255)
 
         self.back_button = BackButton(400, 195)
+        self.config_path = config_path
         self.config = config
 
         self.option_list = ["back", "volume_menu", "volume_game"]
@@ -32,7 +33,7 @@ class OptionsMenu:
     def save_config(self, config=None):
         if config is None:
             config = self.config
-        with open(CONFIG_PATH, "w") as f:
+        with open(self.config_path, "w") as f:
             json.dump(config, f, indent=4)
 
     def activate_option(self, idx):

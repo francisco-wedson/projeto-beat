@@ -52,7 +52,8 @@ screen.blit(company_img, company_rect)
 pygame.display.update()
 
 #Música
-pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
+music_menu_path = 'assets/music/menu/LupusNocte-Arcadewave.ogg'
+pygame.mixer.music.load(music_menu_path)
 pygame.mixer.music.set_volume(config['volume']['menu'])
 pygame.mixer.music.play(-1)
 
@@ -157,9 +158,8 @@ while True:
             pygame.mouse.set_visible(True)
 
         if result == 'menu':
-            pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
+            pygame.mixer.music.load(music_menu_path)
             pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.1)
 
         if isinstance(result, tuple):
             state = result[0]
@@ -183,9 +183,8 @@ while True:
         state = screens['score_screen'].run(events, dt)
 
         if state == 'menu':
-            pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
+            pygame.mixer.music.load(music_menu_path)
             pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.1)
 
     elif state == 'quit':
         pygame.quit()
