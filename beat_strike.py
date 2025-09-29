@@ -153,7 +153,7 @@ while True:
     elif state == 'game':
         result = screens['game'].run(events, dt)
 
-        if state != 'game':
+        if result != 'game':
             pygame.mouse.set_visible(True)
 
         if state == 'menu':
