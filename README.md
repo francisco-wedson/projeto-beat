@@ -51,7 +51,7 @@ python beat_strike.py
 
 ➱ Reiniciar jogo: F5
 
-As teclas para jogar são configuráveis, porém o padrão é:
+**As teclas para jogar são configuráveis, porém o padrão é:**
 
 **✤ Player 1**
 
