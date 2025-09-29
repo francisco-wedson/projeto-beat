@@ -27,6 +27,11 @@ e caso queira:
   ```bash
   pip install pygame
   ```
+> _Caso não consigo instalar, primeiro crie uma venv com o comando: python -m venv 'venv' / python3 -m venv 'venv'.
+
+  Após isso, digite: source venv/bin/activate. Com isso, instale o pygame normalmente com o comando anterior e continue o passo a passo.
+
+  - Nota: Você sempre precisa ativar a venv com o comando source ... para conseguir jogar, caso tenha instalado desse modo._
 4. **Clone o repositório (se estiver com o git instalado) ou instale o arquivo .zip, extraia e entre na pasta**:
 ```bash
 git clone https://github.com/francisco-wedson/projeto-beat.git
