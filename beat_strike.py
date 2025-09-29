@@ -156,7 +156,7 @@ while True:
         if result != 'game':
             pygame.mouse.set_visible(True)
 
-        if state == 'menu':
+        if result == 'menu':
             pygame.mixer.music.load('assets/music/menu/LupusNocte-Arcadewave.ogg')
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.1)
