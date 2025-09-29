@@ -63,9 +63,9 @@ python beat_strike.py
 
 Esquerda: a
 
-Cima: w
-
 Baixo: s
+
+Cima: w
 
 Direita: d
 
@@ -73,8 +73,8 @@ Direita: d
 
 Esquerda: Seta Esquerda
 
-Cima: Seta Cima
-
 Baixo: Seta Baixo
+
+Cima: Seta Cima
 
 Direita: Seta Direita
