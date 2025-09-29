@@ -8,7 +8,7 @@ class MusicSelect:
         #Preparação
         self.screen = screen
         self.bg = background
-        self.music = ['All The Things She Said', 'Beat It', 'Enemy', 'Hohoemi no Bakudan', 'Ichirin no Hana', 'Rebel Yell', 'Runaway (U & I)', 'Pompeii']
+        self.music = ['All The Things She Said', 'Amiga da Minha Mulher', 'Beat It', 'Enemy', 'Hohoemi no Bakudan', 'Ichirin no Hana', 'Rebel Yell', 'Runaway (U & I)', 'Pompeii']
         self.options = [self.music, 'voltar', 'selecionar']
         self.music_info = {}
         self.mouse_pos = (0, 0)
